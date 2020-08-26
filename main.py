@@ -1,372 +1,129 @@
 import pydirectinput
-from discord.ext.commands import Bot
-from discord import file
+import discord
+import json
+import os
+import sys
+import traceback
+from discord.ext import commands
 
-TOKEN = open('TOKEN.txt', "r").read()
-client = Bot(command_prefix='@') #for now
 
-@client.event
+if not os.path.exists("config.json"):
+    with open("config.json", "w") as f:
+        try:
+            with open("config.json.sample") as s:
+                data = json.load(s)
+                json.dump(data, f, indent=4)
+        except FileNotFoundError:
+            print("Could not find sample file to create config from. Please download from the repo.")
+    print("Created config from sample file.")
+    input("Press enter to exit.")
+    raise sys.exit()
+
+with open("config.json") as f:
+    config = json.load(f)
+bot = commands.Bot(command_prefix=config["prefix"])
+
+
+@bot.check
+async def is_allowed(ctx):
+    if ctx.author.id not in config["accepted_users"]:
+        raise commands.errors.CheckFailure()
+        return False
+    return True
+
+
+@bot.check
+async def globally_block_dms(ctx):
+    if ctx.guild is None:
+        raise discord.ext.commands.NoPrivateMessage()
+        return False
+    return True
+
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.errors.CommandNotFound):
+        return
+    elif isinstance(error, commands.errors.CheckFailure):
+        return await ctx.send("You don't have permission to use this command!")
+    elif isinstance(error, commands.errors.NoPrivateMessage):
+        return await ctx.send("This bot does not run in DMs.")
+    elif isinstance(error, commands.errors.MissingRequiredArgument):
+        await ctx.send("You're missing required arguments.")
+        return await ctx.send_help(ctx.command)
+    elif isinstance(error, commands.errors.BadArgument):
+        return await ctx.send("A bad argument was provided, please try again.")
+    if ctx.command:
+        await ctx.send("An error occurred while processing the `{}` command.".format(ctx.command.name))
+    tb = traceback.format_exception(type(error), error, error.__traceback__)
+    error_trace = "".join(tb)
+    print(error_trace)
+
+
+@bot.event
 async def on_ready():
-    print("Logged in as {0.user}".format(client))
+    print("Logged in as {0.user}".format(bot))
 
-@client.event
-async def on_message(message):
-    if message.channel.id == 740832220780036118:
-        if message.content.startswith('hello'):
-            await message.channel.send('Hi there! ' + message.author.mention)
-        if message.content.startswith('b'):
-            pydirectinput.press('z')
-        if message.content.startswith('b2'):
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-        if message.content.startswith('b3'):
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-        if message.content.startswith('b4'):
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-        if message.content.startswith('b5'):
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-        if message.content.startswith('b6'):
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-        if message.content.startswith('b7'):
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-        if message.content.startswith('b8'):
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-        if message.content.startswith('b9'):
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-            pydirectinput.press('z')
-        if message.content.startswith('a'):
-            pydirectinput.press('x')
-        if message.content.startswith('a2'):
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-        if message.content.startswith('a3'):
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-        if message.content.startswith('a4'):
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-        if message.content.startswith('a5'):
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-        if message.content.startswith('a6'):
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-        if message.content.startswith('a7'):
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-        if message.content.startswith('a8'):
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-        if message.content.startswith('a9'):
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-            pydirectinput.press('x')
-        if message.content.startswith('x'):
-            pydirectinput.press('v')
-        if message.content.startswith('y'):
-            pydirectinput.press('c')
-        if message.content.startswith('L'):
-            pydirectinput.press('e')
-        if message.content.startswith('R'):
-            pydirectinput.press('r')
-        if message.content.startswith('up'):
-            pydirectinput.press('w')
-        if message.content.startswith('up2'):
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-        if message.content.startswith('up3'):
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-        if message.content.startswith('up4'):
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-        if message.content.startswith('up5'):
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-        if message.content.startswith('up6'):
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-        if message.content.startswith('up7'):
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-        if message.content.startswith('up8'):
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-        if message.content.startswith('up9'):
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-            pydirectinput.press('w')
-        if message.content.startswith('left'):
-            pydirectinput.press('a')
-        if message.content.startswith('left2'):
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-        if message.content.startswith('left3'):
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-        if message.content.startswith('left4'):
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-        if message.content.startswith('left5'):
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-        if message.content.startswith('left6'):
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-        if message.content.startswith('left7'):
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-        if message.content.startswith('left8'):
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-        if message.content.startswith('left9'):
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-            pydirectinput.press('a')
-        if message.content.startswith('down'):
-            pydirectinput.press('s')
-        if message.content.startswith('down2'):
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-        if message.content.startswith('down3'):
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-        if message.content.startswith('down4'):
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-        if message.content.startswith('down5'):
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-        if message.content.startswith('down6'):
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-        if message.content.startswith('down7'):
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-        if message.content.startswith('down8'):
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-        if message.content.startswith('down9'):
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-            pydirectinput.press('s')
-        if message.content.startswith('right'):
-            pydirectinput.press('d')
-        if message.content.startswith('right2'):
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-        if message.content.startswith('right3'):
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-        if message.content.startswith('right4'):
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-        if message.content.startswith('right5'):
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-        if message.content.startswith('right6'):
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-        if message.content.startswith('right7'):
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-        if message.content.startswith('right8'):
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-        if message.content.startswith('right9'):
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-            pydirectinput.press('d')
-        if message.content.startswith('d-up'):
-            pydirectinput.press('8')
-        if message.content.startswith('d-left'):
-            pydirectinput.press('4')
-        if message.content.startswith('d-down'):
-            pydirectinput.press('2')
-        if message.content.startswith('d-right'):
-            pydirectinput.press('6')
-        if message.content.startswith('start'):
-            pydirectinput.press('enter')
-        if message.content.startswith('select'):
-            pydirectinput.press('space')
-        if message.content.startswith('f'):
-            pydirectinput.press('f')
-            pydirectinput.press('tab')
-            pydirectinput.press('tab')
-            pydirectinput.press('tab')
-            pydirectinput.press('enter')
-            pydirectinput.press('tab')
-            pydirectinput.press('enter')
-            channel = client.get_channel("740832220780036118")
-            await message.channel.send(file=discord.File(r'C:\Users\camer\Desktop\emu_bot\PokemonCrystalVersion.png'))
 
-client.run(TOKEN)
+button_dict = {
+    "a": "x",
+    "b": "z",
+    "x": "v",
+    "y": "c",
+    "l": "e",
+    "r": "r",
+    "up": "w",
+    "down": "s",
+    "left": "a",
+    "right": "d",
+    "d-up": "8",
+    "d-down": "2",
+    "d-left": "4",
+    "d-right": "6",
+    "start": "enter",
+    "select": "space"
+}
+
+
+def repeat_input_x(inp, x):
+    for i in range(0, x):
+        pydirectinput.press(inp)
+
+
+def get_screenshot():
+    file = discord.File("C:/Users/gpgro/Desktop/Media/bloberror.png", "image.png")
+    embed = discord.Embed()
+    embed.set_image(url="attachment://image.png")
+    return embed, file
+
+
+@bot.command()
+async def press_button(ctx, button, repeat: int = None):
+    """Hits the provided button repeat number of times"""
+    if button not in button_dict.keys():
+        raise commands.errors.BadArgument()
+    elif repeat is None:
+        repeat = 1
+    elif 0 <= repeat >= 10:
+        await ctx.send(f"Repeat count of {repeat} is outside the valid limits. Inputted value must be between 1 and 9 inclusive. Changing value to 1.")
+        repeat = 1
+    pressed_button = button_dict[button.lower()]
+    repeat_input_x(pressed_button, repeat)
+    embed, file = get_screenshot()
+    embed.description = f"Pressed the `{button.lower()}` button {repeat} times."
+    await ctx.send(file=file, embed=embed)
+
+
+@bot.command()
+async def hello(ctx):
+    """Says hello!"""
+    await ctx.send(f"Hi there {ctx.author.mention}!")
+
+
+@bot.command()
+async def shutdown(ctx):
+    """Shuts down the bot"""
+    await ctx.send("Shutting down...")
+    await bot.close()
+
+bot.run(config["token"])

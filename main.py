@@ -90,7 +90,18 @@ def repeat_input_x(inp, x):
         pydirectinput.press(inp)
 
 
+def take_screenshot():
+    pydirectinput.press('f')
+    pydirectinput.press('tab')
+    pydirectinput.press('tab')
+    pydirectinput.press('tab')
+    pydirectinput.press('enter')
+    pydirectinput.press('tab')
+    pydirectinput.press('enter')
+
+
 def get_screenshot():
+    take_screenshot()
     file = discord.File(config["screenshot_path"], "image.png")
     embed = discord.Embed()
     embed.set_image(url="attachment://image.png")

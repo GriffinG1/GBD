@@ -4,6 +4,7 @@ import json
 import os
 import sys
 import traceback
+import asyncio
 from discord.ext import commands
 
 
@@ -90,7 +91,8 @@ def repeat_input_x(inp, x):
         pydirectinput.press(inp)
 
 
-def take_screenshot():
+async def take_screenshot():
+    await asyncio.sleep(5)
     pydirectinput.press('f')
     pydirectinput.press('tab')
     pydirectinput.press('tab')
@@ -101,7 +103,6 @@ def take_screenshot():
 
 
 def get_screenshot():
-    take_screenshot()
     file = discord.File(config["screenshot_path"], "image.png")
     embed = discord.Embed()
     embed.set_image(url="attachment://image.png")
@@ -120,6 +121,7 @@ async def press_button(ctx, button, repeat: int = None):
         repeat = 1
     pressed_button = button_dict[button.lower()]
     repeat_input_x(pressed_button, repeat)
+    await take_screenshot()
     embed, file = get_screenshot()
     embed.description = f"Pressed the `{button.lower()}` button {repeat} times."
     await ctx.send(file=file, embed=embed)

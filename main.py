@@ -91,7 +91,7 @@ def repeat_input_x(inp, x):
 
 
 def get_screenshot():
-    file = discord.File("C:/Users/gpgro/Desktop/Media/bloberror.png", "image.png")
+    file = discord.File(config["screenshot_path"], "image.png")
     embed = discord.Embed()
     embed.set_image(url="attachment://image.png")
     return embed, file
